@@ -20,6 +20,7 @@ import android.Manifest;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
@@ -29,6 +30,7 @@ import android.media.Image;
 import android.media.Image.Plane;
 import android.media.ImageReader;
 import android.media.ImageReader.OnImageAvailableListener;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,6 +40,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -54,9 +57,15 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.gson.GsonBuilder;
+import com.squareup.picasso.Picasso;
+
 import java.nio.ByteBuffer;
 import java.util.List;
 
@@ -91,10 +100,10 @@ public abstract class CameraActivity extends AppCompatActivity
 //  private LinearLayout bottomSheetLayout;
 //  private LinearLayout gestureLayout;
 //  private BottomSheetBehavior<LinearLayout> sheetBehavior;
-  protected TextView recognitionTextView,
+  protected TextView recognitionTextView;
 //      recognition1TextView,
 //      recognition2TextView,
-      recognitionValueTextView;
+//      recognitionValueTextView;
 //      recognition1ValueTextView,
 //      recognition2ValueTextView;
 //  protected TextView frameValueTextView,
@@ -113,12 +122,12 @@ public abstract class CameraActivity extends AppCompatActivity
   private int numThreads = -1;
 
   private MainViewModel viewModel;
-  private Button mBtn_info;
+  private CardView mBtn_info;
   private String item = null;
 
-  private TextView mTvTitle, mTvItemTitle, mTvItemDes, mTvItemInstrct;
+  private TextView mTvTitle, mTvItemTitle, mTvItemDes, mTvItemInstrct, mTvItemIngedients, mTvItemProduct;
   private FrameLayout mCLFrame;
-  private ImageView mIvClose;
+  private ImageView mIvClose, mIvItemImage;
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
@@ -127,9 +136,11 @@ public abstract class CameraActivity extends AppCompatActivity
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     setContentView(R.layout.activity_camera);
-    Toolbar toolbar = findViewById(R.id.toolbar);
-    setSupportActionBar(toolbar);
-    getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+    Log.d("test_1211", "size: "+ Resources.getSystem().getDisplayMetrics().widthPixels+"   "+Resources.getSystem().getDisplayMetrics().heightPixels);
+//    Toolbar toolbar = findViewById(R.id.toolbar);
+//    setSupportActionBar(toolbar);
+//    getSupportActionBar().setDisplayShowTitleEnabled(false);
 
     if (hasPermission()) {
       setFragment();
@@ -200,7 +211,7 @@ public abstract class CameraActivity extends AppCompatActivity
 //        });
 
     recognitionTextView = findViewById(R.id.detected_item);
-    recognitionValueTextView = findViewById(R.id.detected_item_value);
+//    recognitionValueTextView = findViewById(R.id.detected_item_value);
 //    recognition1TextView = findViewById(R.id.detected_item1);
 //    recognition1ValueTextView = findViewById(R.id.detected_item1_value);
 //    recognition2TextView = findViewById(R.id.detected_item2);
@@ -210,8 +221,11 @@ public abstract class CameraActivity extends AppCompatActivity
     mTvItemDes = findViewById(R.id.tv_item_des);
     mTvItemTitle = findViewById(R.id.tv_item_title);
     mTvItemInstrct = findViewById(R.id.tv_item_instrct);
+    mTvItemIngedients = findViewById(R.id.tv_item_ingredeints);
+    mTvItemProduct = findViewById(R.id.tv_item_product);
     mCLFrame = findViewById(R.id.frame_container);
     mIvClose = findViewById(R.id.iv_close);
+    mIvItemImage = findViewById(R.id.item_image);
 
     mBtn_info = findViewById(R.id.btn_info);
     mBtn_info.setOnClickListener(this);
@@ -485,6 +499,7 @@ public abstract class CameraActivity extends AppCompatActivity
             (facing == CameraCharacteristics.LENS_FACING_EXTERNAL)
                 || isHardwareLevelSupported(
                     characteristics, CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_FULL);
+        Log.d("test_121", "camera_hardware: "+useCamera2API);
         LOGGER.i("Camera API lv2?: %s", useCamera2API);
         return cameraId;
       }
@@ -499,7 +514,7 @@ public abstract class CameraActivity extends AppCompatActivity
     String cameraId = chooseCamera();
 
     Fragment fragment;
-    if (useCamera2API) {
+    if (true) {
       CameraConnectionFragment camera2Fragment =
           CameraConnectionFragment.newInstance(
               new CameraConnectionFragment.ConnectionCallback() {
@@ -564,10 +579,11 @@ public abstract class CameraActivity extends AppCompatActivity
         if (recognition.getTitle() != null) {
           item = recognition.getTitle();
           recognitionTextView.setText(recognition.getTitle());
+          Log.d("mine_3333", "sd: "+recognition.getTitle());
         }
-        if (recognition.getConfidence() != null)
-          recognitionValueTextView.setText(
-              String.format("%.2f", (100 * recognition.getConfidence())) + "%");
+//        if (recognition.getConfidence() != null)
+//          recognitionValueTextView.setText(
+//              String.format("%.2f", (100 * recognition.getConfidence())) + "%");
       }
 
       Classifier.Recognition recognition1 = results.get(1);
@@ -681,6 +697,13 @@ public abstract class CameraActivity extends AppCompatActivity
     
     if (v.getId() == R.id.btn_info) {
       if ( item != null) {
+        Glide.with(this).load(getDrawable(R.drawable.ic_close)).into(mIvItemImage);
+        mTvTitle.setText("");
+        mTvItemTitle.setText("");
+        mTvItemDes.setText("");
+        mTvItemInstrct.setText("");
+        mTvItemProduct.setText("");
+        mTvItemIngedients.setText("");
         getInfoFromFirebase(item);
       }
     }
@@ -689,6 +712,7 @@ public abstract class CameraActivity extends AppCompatActivity
       try {
         mCLFrame.setVisibility(View.GONE);
         mBtn_info.setVisibility(View.VISIBLE);
+        recognitionTextView.setVisibility(View.VISIBLE);
       }catch (Exception e) {
 
       }
@@ -705,14 +729,21 @@ public abstract class CameraActivity extends AppCompatActivity
   }
 
   private void setUpFrame(ObjectModel objectModel) {
-    Log.d("mine_333", "sad: "+objectModel.getObjectName());
+//    Log.d("mine_333", "sad: "+objectModel.getObjectName());
+
     mCLFrame.setVisibility(View.VISIBLE);
     mBtn_info.setVisibility(View.GONE);
+    recognitionTextView.setVisibility(View.GONE);
     if (objectModel != null) {
-      mTvTitle.setText(objectModel.getObjectName().toString());
-      mTvItemTitle.setText(objectModel.getObjectName().toString());
-      mTvItemDes.setText(objectModel.getObjectDes().toString());
-      mTvItemInstrct.setText(objectModel.getObjectInst().toString());
+      Log.d("mine_333", "sad: "+objectModel.getTitle());
+      Glide.with(this).load(objectModel.getImage().toString()).into(mIvItemImage);
+      mTvTitle.setText(objectModel.getTitle().toString());
+      mTvItemTitle.setText(objectModel.getTitle().toString());
+      mTvItemDes.setText(objectModel.getDescription().toString());
+      mTvItemInstrct.setText(objectModel.getInstruction().toString());
+      mTvItemProduct.setText(objectModel.getProduct().toString());
+      mTvItemIngedients.setText(objectModel.getIngredients().toString());
+
     }
   }
 

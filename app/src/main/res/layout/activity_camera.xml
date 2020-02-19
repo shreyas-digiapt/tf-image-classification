@@ -13,11 +13,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#00000000">
 
     <RelativeLayout
@@ -36,51 +36,92 @@
             tools:context="org.tensorflow.lite.examples.classification.org.shreyasTF.lite.examples.classification.CameraActivity" />
 
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_alignParentTop="true"
-            android:background="@color/tfe_semi_transparent">
+        <!--        <androidx.appcompat.widget.Toolbar-->
+        <!--            android:id="@+id/toolbar"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="?attr/actionBarSize"-->
+        <!--            android:layout_alignParentTop="true"-->
+        <!--            android:background="@color/tfe_semi_transparent">-->
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+        <!--            <RelativeLayout-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="match_parent">-->
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/tfl2_logo"
-                    android:layout_centerVertical="true"/>
+        <!--                <ImageView-->
+        <!--                    android:layout_width="wrap_content"-->
+        <!--                    android:layout_height="wrap_content"-->
+        <!--                    android:src="@drawable/tfl2_logo"-->
+        <!--                    android:layout_centerVertical="true"/>-->
 
-                <Button
-                    android:id="@+id/btn_info"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layoutDirection="rtl"
-                    android:text="Info"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="5dp"/>
+        <!--                <Button-->
+        <!--                    android:id="@+id/btn_info"-->
+        <!--                    android:layout_width="wrap_content"-->
+        <!--                    android:layout_height="wrap_content"-->
+        <!--                    android:layoutDirection="rtl"-->
+        <!--                    android:text="Info"-->
+        <!--                    android:layout_alignParentRight="true"-->
+        <!--                    android:layout_centerVertical="true"-->
+        <!--                    android:layout_marginEnd="5dp"/>-->
 
-            </RelativeLayout>
+        <!--            </RelativeLayout>-->
 
 
-        </androidx.appcompat.widget.Toolbar>
+        <!--        </androidx.appcompat.widget.Toolbar>-->
 
         <include
             android:id="@+id/frame_container"
             layout="@layout/info_frame"
-            android:layout_below="@+id/toolbar"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content" />
-
+            android:layout_centerHorizontal="true"/>
     </RelativeLayout>
 
-    <include
-        android:id="@+id/bottom_sheet_layout"
-        layout="@layout/layout_bottom_sheet" />
+
+    <TextView
+        android:id="@+id/detected_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:text="Title"
+        app:layout_constraintBottom_toTopOf="@+id/btn_info"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textColor="@color/white"
+        android:textSize="20sp"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/btn_info"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_marginBottom="44dp"
+        app:cardBackgroundColor="#ffffff"
+        app:cardCornerRadius="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
+
+                <RelativeLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/custom_btn"
+                    android:layout_margin="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="INFO" />
+
+                </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+<!--        <include-->
+<!--            android:id="@+id/bottom_sheet_layout"-->
+<!--            layout="@layout/layout_bottom_sheet" />-->
 
 
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
