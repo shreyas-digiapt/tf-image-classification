@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "1056723180984",
+    "firebase_url": "https://tensorflow-img-classifiaction.firebaseio.com",
+    "project_id": "tensorflow-img-classifiaction",
+    "storage_bucket": "tensorflow-img-classifiaction.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1056723180984:android:891d0090bd79adb91d834d",
+        "android_client_info": {
+          "package_name": "org.shreyasTF.lite.examples.classification"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1056723180984-j0i9amfi355fsdm43l7mkrt2q4efah3r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsAlq7ljqADmng4pW854E4M2FMv3TiFbg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1056723180984-j0i9amfi355fsdm43l7mkrt2q4efah3r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1056723180984:android:d9485075538dfeb01d834d",
+        "android_client_info": {
+          "package_name": "org.tensorflow.lite.examples.classification"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1056723180984-j0i9amfi355fsdm43l7mkrt2q4efah3r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsAlq7ljqADmng4pW854E4M2FMv3TiFbg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1056723180984-j0i9amfi355fsdm43l7mkrt2q4efah3r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
