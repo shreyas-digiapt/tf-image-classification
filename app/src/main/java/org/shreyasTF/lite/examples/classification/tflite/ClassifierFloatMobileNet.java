@@ -57,13 +57,14 @@ public class ClassifierFloatMobileNet extends Classifier {
 
 
 //    return "mobilenet_v1_1.0_224.tflite";
-    return "model_unquant.tflite";
+//    return "model_unquant.tflite";
+    return "model_2.tflite";
 
   }
 
   @Override
   protected String getLabelPath() {
-    return "labels.txt";
+    return "sample_labels_2.txt";
   }
 
   @Override

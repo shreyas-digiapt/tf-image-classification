@@ -6,22 +6,22 @@
             <size android:width="20dp"
                 android:height="20dp"/>
             <gradient
-                android:startColor="#00AC55"
+                android:startColor="#001899"
                 android:type="linear"
-                android:centerColor="#B483DD67"
-                android:endColor="#B4E3F7E1"
+                android:centerColor="#697DDD"
+                android:endColor="#D8DCFC"
                 android:angle="135"/>
         </shape>
     </item>
 
     <item>
         <shape android:shape="oval">
-        <stroke android:color="@android:color/transparent"
-            android:width="10dp"/>
-        <solid android:color="#FFFFFF"/>
-        <size
-            android:width="15dp"
-            android:height="15dp"/>
+            <stroke android:color="@android:color/transparent"
+                android:width="10dp"/>
+            <solid android:color="#FFFFFF"/>
+            <size
+                android:width="15dp"
+                android:height="15dp"/>
         </shape>
     </item>
 </layer-list>

@@ -56,6 +56,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -64,6 +65,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.gson.GsonBuilder;
+import com.romainpiel.shimmer.Shimmer;
+import com.romainpiel.shimmer.ShimmerTextView;
 import com.squareup.picasso.Picasso;
 
 import java.nio.ByteBuffer;
@@ -76,7 +79,8 @@ import org.shreyasTF.lite.examples.classification.tflite.Classifier;
 import org.shreyasTF.lite.examples.classification.firebase_data.viewModel.MainViewModel;
 
 public abstract class CameraActivity extends AppCompatActivity
-    implements OnImageAvailableListener,
+    implements
+        OnImageAvailableListener,
         Camera.PreviewCallback,
         View.OnClickListener,
         AdapterView.OnItemSelectedListener {
@@ -122,12 +126,18 @@ public abstract class CameraActivity extends AppCompatActivity
   private int numThreads = -1;
 
   private MainViewModel viewModel;
-  private CardView mBtn_info;
   private String item = null;
 
-  private TextView mTvTitle, mTvItemTitle, mTvItemDes, mTvItemInstrct, mTvItemIngedients, mTvItemProduct;
+  private TextView mTvTitle, mTvItemTitle, mTvItemDes, mTvItemInstrct, mTvItemIngedients, mTvItemProduct, mTvItemBrand;
+  private ShimmerTextView mTvLoader;
   private FrameLayout mCLFrame;
   private ImageView mIvClose, mIvItemImage;
+  private RelativeLayout mRlScan, mRlInfo;
+  private CardView mBtn_card_view;
+  private Shimmer shimmer;
+
+  private Handler delayHandler;
+  private Runnable delayRunnable;
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
@@ -226,9 +236,17 @@ public abstract class CameraActivity extends AppCompatActivity
     mCLFrame = findViewById(R.id.frame_container);
     mIvClose = findViewById(R.id.iv_close);
     mIvItemImage = findViewById(R.id.item_image);
+    mRlScan = findViewById(R.id.rl_scan);
+    mRlInfo = findViewById(R.id.rl_info);
+    mTvLoader = findViewById(R.id.tv_loader);
+    mTvItemBrand = findViewById(R.id.tv_item_brand);
 
-    mBtn_info = findViewById(R.id.btn_info);
-    mBtn_info.setOnClickListener(this);
+    shimmer = new Shimmer();
+
+    mBtn_card_view = findViewById(R.id.btn_info);
+
+    mRlScan.setOnClickListener(this);
+    mRlInfo.setOnClickListener(this);
     mIvClose.setOnClickListener(this);
 
 //    frameValueTextView = findViewById(R.id.frame_info);
@@ -578,6 +596,7 @@ public abstract class CameraActivity extends AppCompatActivity
       if (recognition != null) {
         if (recognition.getTitle() != null) {
           item = recognition.getTitle();
+          Log.d("test123", "sad:111111111 "+item);
           recognitionTextView.setText(recognition.getTitle());
           Log.d("mine_3333", "sd: "+recognition.getTitle());
         }
@@ -696,7 +715,27 @@ public abstract class CameraActivity extends AppCompatActivity
     
     
     if (v.getId() == R.id.btn_info) {
+//      if ( item != null) {
+//        Glide.with(this).load(getDrawable(R.drawable.ic_close)).into(mIvItemImage);
+//        mTvTitle.setText("");
+//        mTvItemTitle.setText("");
+//        mTvItemDes.setText("");
+//        mTvItemInstrct.setText("");
+//        mTvItemProduct.setText("");
+//        mTvItemIngedients.setText("");
+//        getInfoFromFirebase(item);
+//      }
+    }
+
+    if (v.getId() == R.id.rl_info) {
+//      recognitionTextView.setVisibility(View.VISIBLE);
+//      mRlScan.setVisibility(View.GONE);
+//      mRlInfo.setVisibility(View.VISIBLE);
+
       if ( item != null) {
+        recognitionTextView.setVisibility(View.GONE);
+        mTvLoader.setVisibility(View.VISIBLE);
+        shimmer.start(mTvLoader);
         Glide.with(this).load(getDrawable(R.drawable.ic_close)).into(mIvItemImage);
         mTvTitle.setText("");
         mTvItemTitle.setText("");
@@ -704,15 +743,24 @@ public abstract class CameraActivity extends AppCompatActivity
         mTvItemInstrct.setText("");
         mTvItemProduct.setText("");
         mTvItemIngedients.setText("");
+        mTvItemBrand.setText("");
+        Log.d("test123", "sad:22222222222 "+item);
         getInfoFromFirebase(item);
       }
+    }
+
+    if (v.getId() == R.id.rl_scan) {
+      recognitionTextView.setVisibility(View.VISIBLE);
+      mRlScan.setVisibility(View.GONE);
+      mRlInfo.setVisibility(View.VISIBLE);
     }
 
     if (v.getId() == R.id.iv_close) {
       try {
         mCLFrame.setVisibility(View.GONE);
-        mBtn_info.setVisibility(View.VISIBLE);
-        recognitionTextView.setVisibility(View.VISIBLE);
+        mBtn_card_view.setVisibility(View.VISIBLE);
+        mRlScan.setVisibility(View.VISIBLE);
+//        recognitionTextView.setVisibility(View.VISIBLE);
       }catch (Exception e) {
 
       }
@@ -723,6 +771,7 @@ public abstract class CameraActivity extends AppCompatActivity
     viewModel.getObjectDetails(item).observe(this, new Observer<ObjectModel>() {
       @Override
       public void onChanged(ObjectModel objectModel) {
+        Log.d("test_123444", "camera: "+objectModel);
         setUpFrame(objectModel);
       }
     });
@@ -731,20 +780,38 @@ public abstract class CameraActivity extends AppCompatActivity
   private void setUpFrame(ObjectModel objectModel) {
 //    Log.d("mine_333", "sad: "+objectModel.getObjectName());
 
-    mCLFrame.setVisibility(View.VISIBLE);
-    mBtn_info.setVisibility(View.GONE);
-    recognitionTextView.setVisibility(View.GONE);
-    if (objectModel != null) {
-      Log.d("mine_333", "sad: "+objectModel.getTitle());
-      Glide.with(this).load(objectModel.getImage().toString()).into(mIvItemImage);
-      mTvTitle.setText(objectModel.getTitle().toString());
-      mTvItemTitle.setText(objectModel.getTitle().toString());
-      mTvItemDes.setText(objectModel.getDescription().toString());
-      mTvItemInstrct.setText(objectModel.getInstruction().toString());
-      mTvItemProduct.setText(objectModel.getProduct().toString());
-      mTvItemIngedients.setText(objectModel.getIngredients().toString());
+    delayHandler = new Handler();
+    delayRunnable = new Runnable() {
+      @Override
+      public void run() {
 
-    }
+        mCLFrame.setVisibility(View.VISIBLE);
+        mBtn_card_view.setVisibility(View.GONE);
+        mTvLoader.setVisibility(View.GONE);
+        shimmer.cancel();
+        if (objectModel != null) {
+          Log.d("mine_33335", "sad: "+objectModel.getTitle());
+          Glide.with(CameraActivity.this).load(objectModel.getImage().toString()).into(mIvItemImage);
+          mTvTitle.setText(objectModel.getTitle().toString());
+          mTvItemTitle.setText(objectModel.getTitle().toString());
+          mTvItemDes.setText(objectModel.getDescription().toString());
+          mTvItemInstrct.setText(objectModel.getInstruction().toString());
+          mTvItemProduct.setText(objectModel.getProduct().toString());
+          mTvItemIngedients.setText(objectModel.getIngredients().toString());
+          mTvItemBrand.setText(objectModel.getBrand().toString());
+
+          try {
+            delayHandler.removeCallbacks(delayRunnable);
+          }catch (Exception e) {
+            Log.d("test444", "asda: "+e.getMessage());
+          }
+        }
+
+      }
+    };
+    delayHandler.postDelayed(delayRunnable, 1500);
+
+
   }
 
   @Override
